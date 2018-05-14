@@ -1,5 +1,18 @@
 <template>
   <div class="hello">
+    <AutoComplete
+      v-model="value1"
+      :data="data1"
+      @on-search="handleSearch1"
+      placeholder="input here"
+      style="width:200px"></AutoComplete>
+    <AutoComplete
+      v-model="value2"
+      @on-search="handleSearch2"
+      placeholder="input here"
+      style="width:200px">
+      <Option v-for="item in data2" :value="item" :key="item">{{ item }}</Option>
+    </AutoComplete>
     <h1>{{ msg }}</h1>
     <h2>Essential Links</h2>
     <ul>
@@ -25,7 +38,27 @@ export default {
   name: 'HelloWorld',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      value1: '',
+      data1: [],
+      value2: '',
+      data2: []
+    }
+  },
+  methods: {
+    handleSearch1 (value) {
+      this.data1 = !value ? [] : [
+        value,
+        value + value,
+        value + value + value
+      ]
+    },
+    handleSearch2 (value) {
+      this.data2 = !value || value.indexOf('@') >= 0 ? [] : [
+        value + '@qq.com',
+        value + '@sina.com',
+        value + '@163.com'
+      ]
     }
   }
 }
