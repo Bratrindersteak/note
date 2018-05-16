@@ -51,7 +51,7 @@
 
 			return {
 				text: {
-					title: '账小计',
+					title: '计',
 					username: '用户名',
 					password: '密码',
 					submit: '登录',

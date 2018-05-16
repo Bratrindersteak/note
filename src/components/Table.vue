@@ -1,77 +1,147 @@
 <template>
-	<Layout>
-		<Header>Header</Header>
-		<Content>
-			<Table :columns="columns1" :data="data1"></Table>
-		</Content>
-		<Footer>Footer</Footer>
-	</Layout>
+	<div class="table">
+		<table>
+			<tr>
+				<th v-for="item in title">{{ item.title }}</th>
+			</tr>
+			<tr v-for="item in data">
+				<td><input class="input" type="text" v-model="item.type" /></td>
+				<td><input class="input" type="text" v-model="item.name" /></td>
+				<td><input class="input" type="text" v-model="item.cost" /></td>
+			</tr>
+		</table>
+		<div class="operation">
+			<button type="button">添加</button>
+			<button type="button">提交</button>
+			<button type="button">刷新</button>
+		</div>
+	</div>
 </template>
 <script>
+	import axios from 'axios';
+
 	export default {
 		data () {
 			return {
 				value: '',
 				list: [],
-				columns1: [
+				title: [
 					{
-						title: 'Name',
+						title: '类型',
+						key: 'type'
+					},
+					{
+						title: '名称',
 						key: 'name'
 					},
 					{
-						title: 'Age',
-						key: 'age'
-					},
-					{
-						title: 'Address',
-						key: 'address'
+						title: '金额',
+						key: 'cost'
 					}
 				],
-				data1: [
-					{
-						name: 'John Brown',
-						age: 18,
-						address: 'New York No. 1 Lake Park',
-						date: '2016-10-03'
-					},
-					{
-						name: 'Jim Green',
-						age: 24,
-						address: 'London No. 1 Lake Park',
-						date: '2016-10-01'
-					},
-					{
-						name: 'Joe Black',
-						age: 30,
-						address: 'Sydney No. 1 Lake Park',
-						date: '2016-10-02'
-					},
-					{
-						name: 'Jon Snow',
-						age: 26,
-						address: 'Ottawa No. 2 Lake Park',
-						date: '2016-10-04'
-					}
-				]
+				data: [],
+				isLoading: true
 			}
 		},
+		mounted: function () {
+			axios.get(`//${ location.hostname }:3000/getData`, {
+				params: {}
+			})
+				.then(res => {
+					return Object.assign({
+						status: res.status,
+						statusText: res.statusText,
+						data: res.data
+					});
+				})
+				.then(res => {
+					if (res.data.length) {
+						this.data = [...res.data];
+					}
+				})
+				.then(() => {
+					this.isLoading = false;
+				})
+				.catch(error => {
+					console.log(error);
+				});
+		},
 		methods: {
-			add (value) {
+			add(value) {
 
 				if (value) {
 					this.list.unshift(value);
 					this.value = '';
 				}
 			},
-			remove (index) {
+			remove(index) {
 				this.list.splice(index, 1);
-				console.log( index );
+				console.log(index);
 			},
-		},
+			submit() {
+				axios.post(`//${ location.hostname }:3000/postData`, {
+					userID: 1,
+					data: this.data
+				})
+					.then(() => {
+
+					})
+					.catch((error) => {
+						console.log( error );
+					});
+			}
+		}
 	}
 </script>
 <style scoped>
+	.table {
+		height: 100%;
+	}
+
+	table {
+		width: 80%;
+		margin-left: 10%;
+		margin-right: 10%;
+		border: 1px solid #000000;
+	}
+
+	tr {
+
+	}
+
+	th {
+		height: 30px;
+		padding: 0;
+		font-weight: normal;
+	}
+
+	td {
+		width: 33.33%;
+		height: 30px;
+		padding: 0;
+	}
+
 	.input {
-		margin: 30px 0;
+		width: 100%;
+		height: 100%;
+		padding: 0;
+		border: 0;
+		text-align: center;
+	}
+
+	th, .input {
+		font-size: 1.6rem;
+	}
+
+	.operation {
+		text-align: center;
+	}
+
+	button {
+		cursor: pointer;
+	}
+
+	table, .operation {
+		margin-top: 20px;
 	}
 </style>
